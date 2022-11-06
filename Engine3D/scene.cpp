@@ -62,6 +62,8 @@
 		shaders.push_back(new Shader(fileName));
 	}
 
+
+
 	void Scene::AddTexture(const std::string& textureFileName,bool for2D)
 	{
 		textures.push_back(new Texture(textureFileName));

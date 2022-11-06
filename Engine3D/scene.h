@@ -77,6 +77,7 @@ protected:
 	std::vector<Shader*> shaders;
 	std::vector<int> chainParents;
 	std::vector<Texture*> textures;
+    //std::vector<GLubyte*> pixels;
 	
 	int pickedShape;
 	
