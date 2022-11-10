@@ -29,7 +29,10 @@ void Game::Init()
 
 //    AddTexture("../res/textures/grass.bmp",false);
 
-    AddTexture("../res/textures/lena256.jpg",false);
+    AddTexture("../res/textures/lena256.jpg",false, 1);
+    AddTexture("../res/textures/lena256.jpg",false, 3);
+    AddTexture("../res/textures/lena256.jpg",false, 2);
+    AddTexture("../res/textures/lena256.jpg",false, 0);
 
 	AddShape(Plane,-1,TRIANGLES);
 	

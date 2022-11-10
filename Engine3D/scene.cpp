@@ -64,9 +64,9 @@
 
 
 
-	void Scene::AddTexture(const std::string& textureFileName,bool for2D)
+	void Scene::AddTexture(const std::string& textureFileName,bool for2D, int type)
 	{
-		textures.push_back(new Texture(textureFileName));
+		textures.push_back(new Texture(textureFileName, type));
 	}
 
 	void Scene::AddTexture(int width,int height, unsigned char *data)
@@ -80,7 +80,7 @@
 		cameras.back()->MyTranslate(pos,0);
 	}
 
-	void Scene::Draw(int shaderIndx,int cameraIndx,int buffer,bool toClear,bool debugMode)
+	void Scene::Draw(int shaderIndx,int cameraIndx,int buffer,bool toClear,bool debugMode, bool flag)
 	{
 		glEnable(GL_DEPTH_TEST);
 		glm::mat4 Normal = MakeTrans();
@@ -94,6 +94,18 @@
 			else
 				Clear(0,0,0,0);
 		}
+        if (toClear && !flag && !debugMode){
+            glViewport(0, 0, 400, 400);
+        }
+        if (!toClear && !flag && !debugMode){
+            glViewport(0,400,400,400);
+        }
+        if (!toClear && flag && !debugMode){
+            glViewport(400,0,400,400);
+        }
+        if (!toClear && !flag && debugMode){
+            glViewport(400,400,400,400);
+        }
 
 		for (unsigned int i=0; i<shapes.size();i++)
 		{

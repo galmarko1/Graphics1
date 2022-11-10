@@ -8,7 +8,7 @@
 class Texture
 {
 public:
-	Texture(const std::string& fileName);
+	Texture(const std::string& fileName, int type);
 	Texture(int width, int height,unsigned char *data);
     void func(const std::string& fileName);
 	void Bind(int slot);

@@ -23,7 +23,14 @@ int main(int argc,char *argv[])
 
 	while(!display.CloseWindow())
 	{
-		scn->Draw(1,0,scn->BACK,true,false);
+        scn->SetShapeTex(0, 0);
+		scn->Draw(1,0,scn->BACK,true,false, false);
+        scn->SetShapeTex(0, 1);
+        scn->Draw(1,0,scn->BACK,false,false, false);
+        scn->SetShapeTex(0, 2);
+        scn->Draw(1,0,scn->BACK,false,false, true);
+        scn->SetShapeTex(0, 3);
+        scn->Draw(1,0,scn->BACK,false,true, false);
 		scn->Motion();
 		display.SwapBuffers();
 		display.PollEvents();	
