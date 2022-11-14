@@ -7,6 +7,7 @@
 #include "../res/includes/glad/include/glad/glad.h"
 #include <iostream>
 #include <vector>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
 #include <numbers>
@@ -70,6 +71,22 @@ static unsigned char *floyed(unsigned char *data) {
 
         }
     }
+
+    ofstream outputFile ("img6.txt");
+    if (outputFile.is_open())
+    {
+        outputFile << "floyd\n";
+
+        for(int i = 0; i < sqr ; i++) {
+            outputFile <<  "\n";
+            for (int j = 0; j < sqr ; j++) {
+                outputFile << mat[i][j]/17 << ",";
+            }
+
+        }
+
+        outputFile.close();
+    }
     unsigned char *data2 = new unsigned char[len * 4];
     int index = 0;
     for (int i = 0; i < sqr; i++) {
@@ -82,17 +99,6 @@ static unsigned char *floyed(unsigned char *data) {
         }
     }
 
-        ofstream outputFile ("floydOutput.txt");
-        if (outputFile.is_open())
-        {
-            outputFile << "Floyd-Steinberg\n";
-            for(int count = 0; count < len - 1; count++){
-                outputFile << data2[count*4] / 17 << "," ;
-            }
-            outputFile << data2[len-2] / 17;
-            outputFile.close();
-        }
-        else cout << "Unable to open file";
 
     return data2;
 }
@@ -240,6 +246,23 @@ static unsigned char *sobel(unsigned char *data) {
         }
     }
 
+    ofstream outputFile ("img4.txt");
+    if (outputFile.is_open())
+    {
+        outputFile << "Canny\n";
+
+        for(int i = 1; i < sqr + 1; i++) {
+            outputFile <<  "\n";
+            for (int j = 1; j < sqr + 1; j++) {
+                outputFile << mat4[i][j] /255 << ",";
+            }
+
+        }
+
+        outputFile.close();
+    }
+    else cout << "Unable to open file";
+
 
     unsigned char *data2 = new unsigned char[len * 4];
     int index = 0;
@@ -253,17 +276,6 @@ static unsigned char *sobel(unsigned char *data) {
         }
     }
 
-    ofstream outputFile ("cannyOutput.txt");
-    if (outputFile.is_open())
-    {
-        outputFile << "Canny\n";
-        for(int count = 0; count < len-1; count++){
-            outputFile << data2[count * 4] / 17 << "," ;
-        }
-        outputFile << data2[len-2] / 17;
-        outputFile.close();
-    }
-    else cout << "Unable to open file";
 
     return data2;
 }
@@ -319,6 +331,22 @@ static unsigned char *halftone(unsigned char *data) {
         }
     }
 
+    ofstream outputFile ("img5.txt");
+    if (outputFile.is_open())
+    {
+        outputFile << "halftone\n";
+
+        for(int i = 0; i < sqr *2; i++) {
+            outputFile <<  "\n";
+            for (int j = 0; j < sqr *2; j++) {
+                outputFile << newMat[i][j]/255 << ",";
+            }
+
+        }
+
+        outputFile.close();
+    }
+
     unsigned char *data2 = new unsigned char[len * 16];
     int index = 0;
     for (int i = 0; i < sqr * 2; i++) {
@@ -331,17 +359,6 @@ static unsigned char *halftone(unsigned char *data) {
         }
     }
 
-    ofstream outputFile ("halftoneOutput.txt");
-    if (outputFile.is_open())
-    {
-        outputFile << "Halftone\n";
-        for(int count = 0; count < len-1; count++){
-            outputFile << data2[count*4] / 255 << "," ;
-        }
-        outputFile << data2[len-2] / 255;
-        outputFile.close();
-    }
-    else cout << "Unable to open file";
 
     return data2;
 }
