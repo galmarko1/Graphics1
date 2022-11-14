@@ -28,16 +28,6 @@ static unsigned char *floyed(unsigned char *data) {
         }
     }
 
-//    for( int i = 0; i < sqr; i++)
-//    {
-//        for(int j = 0; j < sqr/2; j++)
-//        {
-//            char temp = mat[i][sqr-1-j];
-//            mat[i][sqr-1-j] = mat[i][j];
-//            mat[i][j] = temp;
-//        }
-//    }
-
     for (int i = 0; i < sqr; i++) {
         for (int j = 0; j < sqr; j++) {
             char oldPixel = mat[i][j];
