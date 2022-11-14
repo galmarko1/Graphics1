@@ -1,41 +1,17 @@
-Basic 3D graphics engine - based on the Opengl series of TheCherno 
+Assignement 1 - 2D
+Dolev Dor & Gal Markovich
 
-Initialization:
-0. Make sure you download GLFW version suitable to your compiler. 
-1. inputManager.h:
-   1. Init function which define keyboard, mouse and resize functions (see inputManager attached)
-   2. Callback functions implementation (keyboard, mouse and resize) 
-      inputManager may be change when display library changes (now we use GLFW)
-2. main.cpp
-   You can use the main file supported in Game project. 
-   In main.cpp you should do the following:
-   1. Define the width and height of the screen and camera properties (openning angle,near and far)
-   2. Define Display object that will create the screen
-   3. Call inputManager.h Init function 
-   4. Define Scene pointer and call init your function.
-   5. Call Display.SetScene to attache Scene pointer to Display's window. 
-   6. Main loop: must contain Scene->Draw, Display.SwapBuffers and Display.PollEvents
-	
-3. A class inherits from scene (.h and .cpp files)
-   1. You may implement the virtual function (see list bellow)
-   2. Add init function to initiate your scene.
+Changes in the engine:
 
-Virtual function description 
-1. Update - function that define which uniform values will upload to the shader.
-	    must be implemented on the inherited class. 
-	    Use SetUniform... functions to define a new uniform. 
-2. Draw  -  function that calculates uniform values for every shape and call update.
-	    This function will submit every shape to the rendering pipeline by calling shape->Draw.  
-3. WhenRotate - should call every time a shape rotates. 
-4. WhenTranslate - should call every time a shape change position.
-5. Motion - calls every frame (may use for animation)
+-> Scene.cpp: We've changed the Draw function by adding a new boolean parameter, "flag". We're using it to distinguish between the different outputs of the filtered 		      images. Also added calls to glViewPort in order to split the screen to 4.
 
-Add attribute, type vec2 or vec3
-1. In shader.h add attribute name in enum Attributes
-2. In shader.cpp bind your new attribute in the constructor by "glBindAttribLocation"
-3. In MeshConstructor.h add VEC2_ATTRIB_NUM or VEC3_ATTRIB_NUM 1
-4. In Mesh.h in GetData function add attribute in the appropriate location (indieces must remain the last one)
-5. In Mesh.h add Vertex or LineVertex the new attribute 
-6. If you want to add attribute to the simple objects you can do so in Mesh.cpp
+-> Texture.cpp: Added 3 new functions, each for every alogrithm we were asked to implement.
+		Changed the constructor by adding a new int paramater "type" to determine which function we need to call, and if needed to configure the height & width 		(halftone algorithm).
+		
+-> main.cpp: In the main loop we added more calls to setShapeTex and Draw in order to draw 4 different pictures.
 
+-> Mesh.cpp: Configured the colors to display colors properly & flipped the image horizontally.
 
+-> Game.cpp: Added 3 more Textures in the Init function.
+
+-> Added lena256.jpg to the textures directory
