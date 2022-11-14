@@ -10,46 +10,11 @@
 #include <math.h>
 #include <cmath>
 #include <numbers>
+#include <fstream>
 
 using namespace std;
 
 #define N 3
-
-void multiply(int arr1[][N], int arr2[][N], int arr3[][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            arr3[i][j] = 0;
-            for (int k = 0; k < N; k++) {
-                arr3[i][j] += arr1[i][k] * arr2[k][j];
-            }
-        }
-    }
-}
-
-//
-//static void gaussKernel(int size, int sigma = 1, int arr3[3][3]){
-//    size = size/2;
-//    int gausKernelx[3][3] = {{-1,-1,-1},
-//                             {0,0,0},
-//                             {1,1,1}};
-//    int gausKernely[3][3] = {{-1,0,1},
-//                             {-1,0,1},
-//                             {-1,0,1}};
-//
-//    int normal = 1/(2.0 * 3.14159265358979323846 * pow(sigma,2));
-//
-//    int xx[3][3];
-//    int yy[3][3];
-//    multiply(gausKernelx, gausKernelx, xx);
-//    multiply(gausKernely, gausKernely, yy);
-////    int g[3][3]; //todo exp
-//
-//
-//}
-
-
-
-
 
 static unsigned char *floyed(unsigned char *data) {
     int len = strlen((char *) data) / 4;
@@ -61,6 +26,16 @@ static unsigned char *floyed(unsigned char *data) {
             mat[i][j] = (data[4 * (i * sqr + j)] + data[4 * (i * sqr + j) + 1] + data[4 * (i * sqr + j) + 2]) / 3;
         }
     }
+
+//    for( int i = 0; i < sqr; i++)
+//    {
+//        for(int j = 0; j < sqr/2; j++)
+//        {
+//            char temp = mat[i][sqr-1-j];
+//            mat[i][sqr-1-j] = mat[i][j];
+//            mat[i][j] = temp;
+//        }
+//    }
 
     for (int i = 0; i < sqr; i++) {
         for (int j = 0; j < sqr; j++) {
@@ -106,6 +81,19 @@ static unsigned char *floyed(unsigned char *data) {
             index += 4;
         }
     }
+
+        ofstream outputFile ("floydOutput.txt");
+        if (outputFile.is_open())
+        {
+            outputFile << "Floyd-Steinberg\n";
+            for(int count = 0; count < len - 1; count++){
+                outputFile << data2[count*4] / 17 << "," ;
+            }
+            outputFile << data2[len-2] / 17;
+            outputFile.close();
+        }
+        else cout << "Unable to open file";
+
     return data2;
 }
 
@@ -123,7 +111,7 @@ static unsigned char *sobel(unsigned char *data) {
     float mat2[sqr + 2][sqr + 2];
 
 
-    /////insert gausian
+    ///// insert gaussian
 
     float gaussKernel[3][3] = {{1, 2, 1},
                                {2, 4, 2},
@@ -145,12 +133,8 @@ static unsigned char *sobel(unsigned char *data) {
         }
     }
 
+    //// sobel
 
-
-
-    ////end gausian
-    //sobel
-//
     float gx[3][3] = {{-1, 0, 1},
                       {-2, 0, 2},
                       {-1, 0, 1}};
@@ -176,8 +160,7 @@ static unsigned char *sobel(unsigned char *data) {
                                mat2[i + 1][j - 1] * gy[2][0] +
                                mat2[i + 1][j] * gy[2][1] +
                                mat2[i + 1][j + 1] * gy[2][2];
-            float newPixel = (std::sqrt(newPixelGx * newPixelGx + newPixelGy * newPixelGy)) / 1.9;
-//            float newPixel = std::sqrt(newPixelGx * newPixelGx + newPixelGy * newPixelGy);
+            float newPixel = (std::sqrt(newPixelGx * newPixelGx + newPixelGy * newPixelGy)) / 2.3;
 
             if (newPixel < 0)
                 mat3[i][j] = 0;
@@ -186,61 +169,47 @@ static unsigned char *sobel(unsigned char *data) {
             else
                 mat3[i][j] = newPixel;
 
-
-            if (newPixelGx == 0)
-                angles[i][j] = 0;
-            else
-                angles[i][j] = (std::atan2(newPixelGy, newPixelGx)) * 180 / M_PI;
+                float angle = (std::atan2(newPixelGy, newPixelGx)) * 180 / M_PI;
+                if (angle < 0) {
+                    angles[i][j] = angle + 180;
+                }
+                else {
+                    angles[i][j] = angle;
+                }
 
         }
     }
 
-
-
-
-
-
-//    ////////////// end sobel
-//
-    /////non max
+    //// non max
 
     float mat4[sqr + 2][sqr + 2];
 
-    float max = -2000;
     for (int i = 1; i < sqr + 2; i++) {
         for (int j = 1; j < sqr + 2; j++) {
-            float p1;
-            float p2;
+            float p1 = 256;
+            float p2 = 256;
             float curr = mat3[i][j];
-            if ((angles[i][j] <= 22.5 && angles[i][j] >= -22.5) || (angles[i][j] < -157.5 && angles[i][j] >= -180)) {
+            if ((angles[i][j] < 22.5 && angles[i][j] >= 0) || (angles[i][j] <= 157.5 && angles[i][j] >= 180)) {
                 p1 = mat3[i][j - 1];
                 p2 = mat3[i][j + 1];
-            } else if ((angles[i][j] <= 67.5 && angles[i][j] >= 22.5) ||
-                       (angles[i][j] >= -157.5 && angles[i][j] < -112.5)) {
+            } else if  (angles[i][j] < 67.5 && angles[i][j] >= 22.5) {
                 p1 = mat3[i - 1][j - 1];
                 p2 = mat3[i + 1][j + 1];
-            } else if ((angles[i][j] <= 112.5 && angles[i][j] >= 67.5) ||
-                       (angles[i][j] < -67.5 && angles[i][j] >= -112.5)) {
+            } else if (angles[i][j] < 112.5 && angles[i][j] >= 67.5) {
                 p1 = mat3[i - 1][j];
                 p2 = mat3[i + 1][j];
-            } else if ((angles[i][j] <= 157.5 && angles[i][j] >= 112.5) ||
-                       (angles[i][j] < -22.5 && angles[i][j] >= -67.5)) {
+            } else if (angles[i][j] < 157.5 && angles[i][j] >= 112.5) {
                 p1 = mat3[i + 1][j - 1];
                 p2 = mat3[i - 1][j + 1];
             }
-//            } else {
-//                p1 = mat3[i][j - 1];
-//                p2 = mat3[i][j + 1];
-//            }
-            if (curr >= p1 && curr >= p2) {
-                if (curr > max)
-                    max = curr;
+            if (curr >= p1 && curr > p2) {
                 mat4[i][j] = curr;
             } else {
                 mat4[i][j] = 0;
             }
         }
     }
+
 
     float highThreshold = 180;
     float lowThreshold = 60;
@@ -267,14 +236,9 @@ static unsigned char *sobel(unsigned char *data) {
                     mat4[i][j] = 255;
                 else
                     mat4[i][j] = 0;
-//
             }
-//
-//
         }
     }
-
-    ///////////////
 
 
     unsigned char *data2 = new unsigned char[len * 4];
@@ -288,6 +252,19 @@ static unsigned char *sobel(unsigned char *data) {
             index += 4;
         }
     }
+
+    ofstream outputFile ("cannyOutput.txt");
+    if (outputFile.is_open())
+    {
+        outputFile << "Canny\n";
+        for(int count = 0; count < len-1; count++){
+            outputFile << data2[count * 4] / 17 << "," ;
+        }
+        outputFile << data2[len-2] / 17;
+        outputFile.close();
+    }
+    else cout << "Unable to open file";
+
     return data2;
 }
 
@@ -353,6 +330,19 @@ static unsigned char *halftone(unsigned char *data) {
             index += 4;
         }
     }
+
+    ofstream outputFile ("halftoneOutput.txt");
+    if (outputFile.is_open())
+    {
+        outputFile << "Halftone\n";
+        for(int count = 0; count < len-1; count++){
+            outputFile << data2[count*4] / 255 << "," ;
+        }
+        outputFile << data2[len-2] / 255;
+        outputFile.close();
+    }
+    else cout << "Unable to open file";
+
     return data2;
 }
 
