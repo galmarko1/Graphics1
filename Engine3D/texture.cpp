@@ -125,7 +125,7 @@ static unsigned char *sobel(unsigned char *data) {
                              mat[i + 1][j] * gaussKernel[2][1] +
                              mat[i + 1][j + 1] * gaussKernel[2][2];
 
-            mat2[i][j] = mat[i][j] + newPixel / 16.0;
+            mat2[i][j] = newPixel / 16.0;
         }
     }
 
@@ -156,22 +156,12 @@ static unsigned char *sobel(unsigned char *data) {
                                mat2[i + 1][j - 1] * gy[2][0] +
                                mat2[i + 1][j] * gy[2][1] +
                                mat2[i + 1][j + 1] * gy[2][2];
-            float newPixel = (std::sqrt(newPixelGx * newPixelGx + newPixelGy * newPixelGy)) / 2.3;
+            float newPixel = (std::sqrt(newPixelGx * newPixelGx + newPixelGy * newPixelGy));
 
-            if (newPixel < 0)
-                mat3[i][j] = 0;
-            else if (newPixel > 255)
-                mat3[i][j] = 255;
-            else
                 mat3[i][j] = newPixel;
 
-                float angle = (std::atan2(newPixelGy, newPixelGx)) * 180 / M_PI;
-                if (angle < 0) {
-                    angles[i][j] = angle + 180;
-                }
-                else {
-                    angles[i][j] = angle;
-                }
+                float angle = (std::atan2(newPixelGy, newPixelGx));
+                angles[i][j] = angle;
 
         }
     }
@@ -179,26 +169,28 @@ static unsigned char *sobel(unsigned char *data) {
     //// non max
 
     float mat4[sqr + 2][sqr + 2];
+    int ang = 180;
 
-    for (int i = 1; i < sqr + 2; i++) {
-        for (int j = 1; j < sqr + 2; j++) {
-            float p1 = 256;
-            float p2 = 256;
+    for (int i = 1; i < sqr - 1; i++) {
+        for (int j = 1; j < sqr - 1; j++) {
+            float p1;
+            float p2;
             float curr = mat3[i][j];
-            if ((angles[i][j] < 22.5 && angles[i][j] >= 0) || (angles[i][j] <= 157.5 && angles[i][j] >= 180)) {
+            double direction = angles[i][j];
+            if ((0 <= direction < ang/8) || (15 * ang/8 <= direction <= 2 * ang)) {
                 p1 = mat3[i][j - 1];
                 p2 = mat3[i][j + 1];
-            } else if  (angles[i][j] < 67.5 && angles[i][j] >= 22.5) {
-                p1 = mat3[i - 1][j - 1];
-                p2 = mat3[i + 1][j + 1];
-            } else if (angles[i][j] < 112.5 && angles[i][j] >= 67.5) {
+            } else if ((ang/8 <= direction * 3 * ang/8) || (9 * ang / 8 <= direction < 11 * ang/8)) {
+                p1 = mat3[i + 1][j - 1];
+                p2 = mat3[i - 1][j + 1];
+            } else if ((3 * ang/8 <= direction < 5 * ang/8) || (11 * ang / 8 <= direction < 13 * ang/8)) {
                 p1 = mat3[i - 1][j];
                 p2 = mat3[i + 1][j];
-            } else if (angles[i][j] < 157.5 && angles[i][j] >= 112.5) {
+            } else {
                 p1 = mat3[i + 1][j - 1];
                 p2 = mat3[i - 1][j + 1];
             }
-            if (curr >= p1 && curr > p2) {
+            if (curr >= p1 && curr >= p2) {
                 mat4[i][j] = curr;
             } else {
                 mat4[i][j] = 0;
@@ -206,9 +198,8 @@ static unsigned char *sobel(unsigned char *data) {
         }
     }
 
-
     float highThreshold = 180;
-    float lowThreshold = 60;
+    float lowThreshold = 120;
 
     for (int i = 0; i < sqr + 1; i++) {
         for (int j = 0; j < sqr + 1; j++) {
