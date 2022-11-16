@@ -278,7 +278,7 @@ static unsigned char *halftone(unsigned char *data) {
     for (int i = 0; i < sqr; i++) {
         for (int j = 0; j < sqr; j++) {
 
-            float curr = (float) mat[i][j] / (float) 255;
+            float curr =   (float) mat[i][j] / (float) 255;
             if (curr < 0.2) {
                 newMat[2 * i][2 * j] = 0;
                 newMat[2 * i + 1][2 * j] = 0;
@@ -335,7 +335,7 @@ static unsigned char *halftone(unsigned char *data) {
             data2[index] = newMat[i][j];
             data2[index + 1] = newMat[i][j];
             data2[index + 2] = newMat[i][j];
-            data2[index + 3] = data[4 * (((i / 2) * sqr) + (j / 2)) + 3];
+            data2[index + 3] = (data[4 * (((i / 2) * sqr) + (j / 2)) + 3]);
             index += 4;
         }
     }

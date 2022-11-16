@@ -95,16 +95,16 @@
 				Clear(0,0,0,0);
 		}
         if (toClear && !flag && !debugMode){
-            glViewport(0, 0, 400, 400);
+            glViewport(0, 0, 256, 256);
         }
         if (!toClear && !flag && !debugMode){
-            glViewport(0,400,400,400);
+            glViewport(0,256,256,256);
         }
         if (!toClear && flag && !debugMode){
-            glViewport(400,0,400,400);
+            glViewport(256,0,256,256);
         }
         if (!toClear && !flag && debugMode){
-            glViewport(400,400,400,400);
+            glViewport(256,256,256,256);
         }
 
 		for (unsigned int i=0; i<shapes.size();i++)
